@@ -14,7 +14,7 @@ def load_pickel_file():
     model = LogisticRegression()
     model.fit(X_train, Y_train)
     # save the model to disk
-    filename = 'finalized_model.sav'
+    filename = '/root/finalized_model.sav'
     pickle.dump(model, open(filename, 'wb'))
 
     return 'Model is trained now.. Please follow below link to get result <br /> <br /> <a ' \
@@ -25,7 +25,7 @@ def load_pickel_file():
 def get_result():
     try:
         X_train, X_test, Y_train, Y_test = train_model()
-        filename = 'finalized_model.sav'
+        filename = '/root/finalized_model.sav'
         # load the model from disk
         loaded_model = pickle.load(open(filename, 'rb'))
         result = loaded_model.score(X_test, Y_test)
