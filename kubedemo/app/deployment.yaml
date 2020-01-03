@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-python-service
+  name: diabetes_score-service
 spec:
   selector:
-    app: hello-python
+    app: diabetes_score
   ports:
   - protocol: "TCP"
     port: 6000
@@ -15,20 +15,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-python
+  name: diabetes_score
 spec:
   selector:
     matchLabels:
-      app: hello-python
+      app: diabetes_score
   replicas: 4
   template:
     metadata:
       labels:
-        app: hello-python
+        app: diabetes_score
     spec:
       containers:
-      - name: hello-python
-        image: hello-python:latest
+      - name: diabetes_score
+        image: diabetes_score:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 5000
