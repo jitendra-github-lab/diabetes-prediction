@@ -8,14 +8,16 @@ import pickle
 from sklearn import tree
 from io import StringIO
 from flask import request
-
+import os
 app = Flask(__name__)
 
 # Uncomment below code, If application running in Linux/MacOS
-file_location = "/root/ml/finalized_model.sav"
+#base_path = "/root/ml/finalized_model.sav"
 
 # Uncomment below code, If application running in Windows
-#file_location = 'c:\\MY_WORK\\finalized_model.sav'
+base_path = 'c:\\MY_WORK\\'
+model_path = os.path.join(base_path, 'ml')
+file_name = 'finalized_model.sav'
 
 
 def model_trainer():
@@ -29,7 +31,7 @@ def model_trainer():
     score = accuracy_score(Y_test, prediction)
     print("SCORE ", score)
     # save the model to disk
-    pickle.dump(clf, open(file_location, 'wb'))
+    pickle.dump(clf, open(os.path.join(model_path, file_name), 'wb'))
 
     return 'Model is trained with {} Score'.format(score)
 
@@ -48,7 +50,7 @@ def invoke_api():
 
         X_train, X_test, Y_train, Y_test = split_data(len(datas))
         # load the model from disk
-        loaded_model = pickle.load(open(file_location, 'rb'))
+        loaded_model = pickle.load(open(os.path.join(model_path, file_name), 'rb'))
         try:
             prediction = loaded_model.predict(datas)
         except Exception as ee:
