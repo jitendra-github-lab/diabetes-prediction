@@ -5,7 +5,7 @@ WORKDIR /app
 ADD . /app/
 RUN pip install -r requirements.txt
 
-RUN mkdir /ml
+RUN mkdir /root/ml
 
 EXPOSE 5000
 CMD ["python", "/app/main.py"]

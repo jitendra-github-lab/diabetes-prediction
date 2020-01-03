@@ -12,10 +12,10 @@ import os
 app = Flask(__name__)
 
 # Uncomment below code, If application running in Linux/MacOS
-#base_path = "/root/ml/finalized_model.sav"
+base_path = "/root/"
 
 # Uncomment below code, If application running in Windows
-base_path = 'c:\\MY_WORK\\'
+#base_path = 'c:\\MY_WORK\\'
 model_path = os.path.join(base_path, 'ml')
 file_name = 'finalized_model.sav'
 
