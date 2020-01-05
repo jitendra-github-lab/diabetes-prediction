@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: diabetes_score-service
+  name: diabetes-score-service
 spec:
   selector:
-    app: diabetes_score
+    app: diabetes-score
   ports:
   - protocol: "TCP"
     port: 6000
@@ -15,20 +15,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: diabetes_score
+  name: diabetes-score
 spec:
   selector:
     matchLabels:
-      app: diabetes_score
+      app: diabetes-score
   replicas: 4
   template:
     metadata:
       labels:
-        app: diabetes_score
+        app: diabetes-score
     spec:
       containers:
-      - name: diabetes_score
-        image: diabetes_score:latest
+      - name: diabetes-score
+        image: diabetes-score:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 5000
