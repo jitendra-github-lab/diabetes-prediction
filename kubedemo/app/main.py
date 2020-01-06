@@ -1,10 +1,8 @@
-from array import array
 
 from flask import Flask
 import flask
 import pandas as pd
 from sklearn import model_selection
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import pickle
 from sklearn import tree
@@ -12,8 +10,6 @@ from io import StringIO
 from flask import request
 import os
 import json
-import numpy as np
-from pandas.io.json import json_normalize
 
 app = Flask(__name__)
 
