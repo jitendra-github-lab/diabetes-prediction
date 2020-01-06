@@ -1,4 +1,3 @@
-
 from flask import Flask
 import flask
 import pandas as pd
@@ -14,10 +13,10 @@ import json
 app = Flask(__name__)
 
 # Uncomment below code, If application running in Linux/MacOS
-base_path = "/root/"
+#base_path = "/root/"
 
 # Uncomment below code, If application running in Windows
-#base_path = 'c:\\MY_WORK\\'
+base_path = 'c:\\MY_WORK\\'
 model_path = os.path.join(base_path, 'ml')
 file_name = 'finalized_model.sav'
 
@@ -50,7 +49,7 @@ def invoke_api():
         if request.content_type == 'text/csv':
             data = request.data.decode('utf-8')
             s = StringIO(data)
-            datas = pd.read_csv(s, header=None,  error_bad_lines=False, skiprows=3, skipfooter=1)
+            datas = pd.read_csv(s, header=None, error_bad_lines=False, skiprows=3, skipfooter=1)
         else:
             return flask.Response(response='This predictor only supports CSV data', status=415, mimetype='text/plain')
 
@@ -86,9 +85,7 @@ def get_score():
     data = request.get_json()
     dic = None
 
-    print("INPUT ", data['diabetic_record'])
     df = pd.DataFrame([x.split(',') for x in data['diabetic_record'].split('\n')])
-    print("TYPE ", df.shape, " output ", df)
     loaded_model = pickle.load(open(os.path.join(model_path, file_name), 'rb'))
     try:
         prediction = loaded_model.predict(df)
@@ -104,7 +101,8 @@ def get_score():
 
     return json.dumps(dic)
 
-def split_data(test_size = 0.33):
+
+def split_data(test_size=0.33):
     url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
     names = ['preg', 'plas', 'pres', 'skin', 'test', 'mass', 'pedi', 'age', 'class']
     dataframe = pd.read_csv(url, names=names)
@@ -118,7 +116,13 @@ def split_data(test_size = 0.33):
 
 @app.route("/")
 def welcome_page():
-    response = 'Hi, for getting score please apply "<b>/score<b/>" post URL <br /><br /> Please us formate as given below : <br /><br /> {"diabetic_record":"2,197,70,45,543,30.5,0.158,53"}'
+    response = 'Hi, for getting score please apply "<b>/score</b>" post URL <br /><br />' \
+               ' Apply JSON format as given below : <br /><br />' \
+               ' {"diabetic_record":"2,197,70,45,543,30.5,0.158,53"}<br /><br />' \
+               'All the input values are based on <br />' \
+               ' <b color="green">["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"] </b> and ' \
+               '<b color="blue">Hash Diabetes</b> is response based on given input' \
+
     return response;
 
 
