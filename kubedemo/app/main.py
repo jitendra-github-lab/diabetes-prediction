@@ -31,7 +31,7 @@ def model_trainer():
     clf = clf.fit(X_train, Y_train)
     prediction = clf.predict(X_test)
     score = accuracy_score(Y_test, prediction)
-    print("SCORE ", score)
+    print("Training SCORE ", score)
     # save the model to disk
     pickle.dump(clf, open(os.path.join(model_path, file_name), 'wb'))
 
@@ -51,7 +51,6 @@ def invoke_api():
             data = request.data.decode('utf-8')
             s = StringIO(data)
             datas = pd.read_csv(s, header=None,  error_bad_lines=False, skiprows=3, skipfooter=1)
-            print("DATAS ", datas)
         else:
             return flask.Response(response='This predictor only supports CSV data', status=415, mimetype='text/plain')
 
@@ -61,7 +60,6 @@ def invoke_api():
             prediction = loaded_model.predict(datas)
         except Exception as ee:
             print("EE", ee)
-        print("PREDICTION1 ", prediction)
         dic = dict()
         if int(prediction[0]) == 1:
             dic['Message'] = "This person is likley to have type 2 diabetes"
@@ -85,23 +83,18 @@ def invoke_api():
 @app.route('/score', methods=['POST'])
 def get_score():
     prediction = None
-    data1 = request.get_json()
-    print(type(data1))
+    data = request.get_json()
     dic = None
 
-    print("INPUT ", data1['diabetic_record'])
-    #data = pd.DataFrame(list(data1.items()))
-    #data = pd.DataFrame(data)
-    df = pd.DataFrame([x.split(',') for x in data1['diabetic_record'].split('\n')])
+    print("INPUT ", data['diabetic_record'])
+    df = pd.DataFrame([x.split(',') for x in data['diabetic_record'].split('\n')])
     print("TYPE ", df.shape, " output ", df)
-   # X_train, X_test, Y_train, Y_test = split_data(len(df))
     loaded_model = pickle.load(open(os.path.join(model_path, file_name), 'rb'))
     try:
         prediction = loaded_model.predict(df)
     except Exception as ee:
         print("EE", ee)
-    print("PREDICTION1 ", prediction)
-   # score = accuracy_score(Y_test, prediction)
+
     dic = dict()
 
     if int(prediction[0]) == 1:
@@ -125,26 +118,11 @@ def split_data(test_size = 0.33):
 
 @app.route("/")
 def welcome_page():
-    response = 'Hi, for getting score please apply "<b>/invoke<b/>" post URL'
+    response = 'Hi, for getting score please apply "<b>/score<b/>" post URL <br /><br /> Please us formate as given below : <br /><br /> {"diabetic_record":"2,197,70,45,543,30.5,0.158,53"}'
     return response;
 
 
 if __name__ == "__main__":
     output = model_trainer()
     print(output)
-    # arr = [[6, 148, 72, 35, 0, '33.6', '0.627', 50], [1, 85, 66, 29, 0, '26.6', '0.351', 31],
-    #        [8, 183, 64, 0, 0, '23.3', '0.672', 32], [1, 89, 66, 23, 94, '28.1', '0.167', 21],
-    #        [10, 115, 0, 0, 0, '35.3', '0.134', 29], [2, 197, 70, 45, 543, '30.5', '0.158', 53],
-    #        [4, 110, 92, 0, 0, 37.6, 0.191, 30],
-    #        [1, 189, 60, 23, 846, 30.1, 0.398, 59], [10,122,78,31,0,27.6,0.512,45]]
-    # nparr = np.array(arr)
-    # print(nparr)
-    # output = invoke_api(nparr)
-    # print("SCORE ", output)
-
-    # filename1 = 'c:\\MY_WORK\\input.csv'
-    # data = pd.read_csv(filename1, header=None)
-    # print(len(data))
-   # output = invoke_api(data)
-   # print(output)
     app.run(host='0.0.0.0')
