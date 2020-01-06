@@ -1,3 +1,5 @@
+from array import array
+
 from flask import Flask
 import flask
 import pandas as pd
@@ -9,6 +11,10 @@ from sklearn import tree
 from io import StringIO
 from flask import request
 import os
+import json
+import numpy as np
+from pandas.io.json import json_normalize
+
 app = Flask(__name__)
 
 # Uncomment below code, If application running in Linux/MacOS
@@ -38,25 +44,35 @@ def model_trainer():
 
 @app.route('/invoke', methods=['POST'])
 def invoke_api():
+    datas = None
+    score = None
+    prediction = None
+    response = None
+    dic = None
     try:
-        datas = None
-        score = None
+
         if request.content_type == 'text/csv':
             data = request.data.decode('utf-8')
             s = StringIO(data)
             datas = pd.read_csv(s, header=None,  error_bad_lines=False, skiprows=3, skipfooter=1)
+            print("DATAS ", datas)
         else:
             return flask.Response(response='This predictor only supports CSV data', status=415, mimetype='text/plain')
 
-        X_train, X_test, Y_train, Y_test = split_data(len(datas))
         # load the model from disk
         loaded_model = pickle.load(open(os.path.join(model_path, file_name), 'rb'))
         try:
             prediction = loaded_model.predict(datas)
         except Exception as ee:
             print("EE", ee)
+        print("PREDICTION1 ", prediction)
+        dic = dict()
+        if int(prediction[0]) == 1:
+            dic['Message'] = "This person is likley to have type 2 diabetes"
+        else:
+            dic['Message'] = "Not a diabetes person"
 
-        score = accuracy_score(Y_test, prediction)
+        response = json.dumps(dic)
     except FileNotFoundError as e:
         print("ERROR ", e)
         return 'It seems model has not been trained, <br /><br /> <b>For training the model</b> <a ' \
@@ -64,9 +80,40 @@ def invoke_api():
     except Exception as ae:
         print("Exception ", ae)
         return 'Please contact to admin for resolving current issues, Thanks'
+    finally:
+        dic = None
 
-    return str(score)
+    return response
 
+
+@app.route('/score', methods=['POST'])
+def get_score():
+    prediction = None
+    data1 = request.get_json()
+    print(type(data1))
+    dic = None
+
+    print("INPUT ", data1['diabetic_record'])
+    #data = pd.DataFrame(list(data1.items()))
+    #data = pd.DataFrame(data)
+    df = pd.DataFrame([x.split(',') for x in data1['diabetic_record'].split('\n')])
+    print("TYPE ", df.shape, " output ", df)
+   # X_train, X_test, Y_train, Y_test = split_data(len(df))
+    loaded_model = pickle.load(open(os.path.join(model_path, file_name), 'rb'))
+    try:
+        prediction = loaded_model.predict(df)
+    except Exception as ee:
+        print("EE", ee)
+    print("PREDICTION1 ", prediction)
+   # score = accuracy_score(Y_test, prediction)
+    dic = dict()
+
+    if int(prediction[0]) == 1:
+        dic['Message'] = "This person is likley to have type 2 diabetes"
+    else:
+        dic['Message'] = "Not a diabetes person"
+
+    return json.dumps(dic)
 
 def split_data(test_size = 0.33):
     url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv"
@@ -82,9 +129,7 @@ def split_data(test_size = 0.33):
 
 @app.route("/")
 def welcome_page():
-    response = 'Follow below instruction to train the model and getting the result<br /><br /> 1). For training the ' \
-               'model click here <a href="http://localhost:5000/trainModel">Train Model</a> <br /><br /> 2). For ' \
-               'getting result click here <a href="http://localhost:5000/getResult">Get Result</a> '
+    response = 'Hi, for getting score please apply "<b>/invoke<b/>" post URL'
     return response;
 
 
