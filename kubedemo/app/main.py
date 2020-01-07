@@ -79,7 +79,7 @@ def invoke_api():
     return response
 
 
-@app.route('/score', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def get_score():
     prediction = None
     data = request.get_json()
@@ -116,7 +116,7 @@ def split_data(test_size=0.33):
 
 @app.route("/")
 def welcome_page():
-    response = 'Hi, for getting prediction please apply "<b>/score</b>" post URL <br /><br />' \
+    response = 'Hi, for getting prediction please apply "<b>/predict</b>" post URL <br /><br />' \
                ' Apply JSON format as given below : <br /><br />' \
                ' {"diabetic_record":"2,197,70,45,543,30.5,0.158,53"}<br /><br />' \
                'All the input values are based on <br />' \
