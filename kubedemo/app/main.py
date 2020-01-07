@@ -121,7 +121,7 @@ def welcome_page():
                ' {"diabetic_record":"2,197,70,45,543,30.5,0.158,53"}<br /><br />' \
                'All the input values are based on <br />' \
                ' <b color="green">["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"] </b> and ' \
-               '<b color="blue">Hash Diabetes</b> is response based on given input' \
+               '<b color="blue">Has Diabetes</b> is response based on given input' \
 
     return response;
 
