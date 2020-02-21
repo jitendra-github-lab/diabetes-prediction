@@ -6,4 +6,4 @@ $ docker build -f Dockerfile -t diabetes-score:latest .
 $ kubectl apply -f deployment.yaml
 $ kubectl get all
 
-Note: From service take the newly generated ip:port and fire on browser
+Note: From service take the newly generated ip:port and fire on browser 
